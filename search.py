@@ -88,8 +88,67 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    closedSet = set()
+    
+    #Stack for processing nodes
+    fringe = util.Stack()
+        
+    #start state
+    start = problem.getStartState()
+  
+    #push first node onto the stack
+    fringe.push(start)
+    
+    #path to goal
+    path, finalPath = [], []
+    
+    #dictionary of expanded states
+    expanded = {}
+    
+    #dfs algorithm
+    while not(fringe.isEmpty()): 
+        currState = fringe.pop()
+                    
+        if currState == start:
+            currState = (currState, None, None )
+        
+        state = currState[0]
+        
+        if state != start:
+            path.append(currState)
+            
+        closedSet.add(state)
+        
+        if problem.isGoalState(state):
+            for elem in path:
+                finalPath.append(elem[1])
+            break
+                     
+        successors = problem.getSuccessors(state)
+        expanded[state] = successors  
+        successorAdded = False     
+        #loop through successors and process in alphabetical order of direction
+        for s in successors:     
+            if s[0] not in closedSet:
+                fringe.push(s)
+                successorAdded = True    
+        
+        if not successorAdded:
+            while(True):
+                donePopping = False
+                try:
+                    poppedState = path.pop()
+                except IndexError:
+                    break
+                sList = expanded.get(poppedState[0])
+                for s in sList:
+                    if s[0] not in closedSet:
+                        donePopping = True
+                        path.append(poppedState)
+                        break
+                if donePopping:
+                    break          
+    return finalPath
 
 def breadthFirstSearch(problem):
     """
