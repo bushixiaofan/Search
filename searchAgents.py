@@ -41,6 +41,7 @@ from game import Actions
 import util
 import time
 import search
+import operator
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -284,17 +285,18 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
+        visitedCorners = [0, 0 , 0 , 0]
+        #set a goal
+        self.goal = reduce(operator.mul, visitedCorners, 1) == 1
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startingPosition
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.goal
+        
 
     def getSuccessors(self, state):
         """
