@@ -154,8 +154,44 @@ def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    closedSet = set()
+    
+    #Queue for processing nodes
+    fringe = util.Queue()
+        
+    #start state
+    start = problem.getStartState()
+  
+    #push first node onto the queue with a list how to get to that node
+    fringe.push((start, []))
+    
+    #path to goal
+    finalPath = []
+        
+    #bfs algorithm
+    while not(fringe.isEmpty()):
+        data = fringe.pop()
+        currState = data[0]
+                    
+        if currState == start:
+            currState = (currState, None, None )
+        
+        state = currState[0]
+            
+        if problem.isGoalState(state):
+            finalPath = data[1]
+            break
+        
+        if state not in closedSet:             
+            successors = problem.getSuccessors(state)  
+        
+        closedSet.add(state) 
+        #loop through successors and process in alphabetical order of direction
+        for s in successors:     
+            if s[0] not in closedSet:
+                nextAction = s[1]
+                fringe.push((s, data[1] + [nextAction]))           
+    return finalPath
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
