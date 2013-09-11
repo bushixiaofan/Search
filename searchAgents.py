@@ -296,9 +296,9 @@ class CornersProblem(search.SearchProblem):
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
-        if state in self.corners:
+        if state in self.corners and state not in self.visitedCorners:
             self.visitedCorners.append(state)
-            
+                        
         isGoal = len(self.visitedCorners) == len(self.corners)
 
         # For display purposes only
