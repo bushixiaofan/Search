@@ -127,7 +127,7 @@ def depthFirstSearch(problem):
         successors = problem.getSuccessors(state)
         expanded[state] = successors  
         successorAdded = False     
-        #loop through successors and process in alphabetical order of direction
+    
         for s in successors:     
             if s[0] not in closedSet:
                 fringe.push(s)
@@ -186,7 +186,7 @@ def breadthFirstSearch(problem):
             successors = problem.getSuccessors(state)  
         
         closedSet.add(state) 
-        #loop through successors and process in alphabetical order of direction
+    
         for s in successors:     
             if s[0] not in closedSet:
                 nextAction = s[1]
@@ -223,11 +223,9 @@ def uniformCostSearch(problem):
         
         if state not in closedSet:             
             successors = problem.getSuccessors(state) 
-            
-        closedSet.add(state) 
-        #loop through successors and process in alphabetical order of direction
-        for s in successors: 
-            if s[0] not in closedSet:
+            closedSet.add(state) 
+        
+            for s in successors: 
                 nextAction = s[1]
                 actionList = path + [nextAction]
                 priorityAndCost = data[2] + s[2]
@@ -254,10 +252,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #push first node onto the queue with a list how to get to that node
     totalCost = priority = 0
     startTuple = (start, None, 0)
-    fringe.push((startTuple, [], totalCost) , priority)
-    
-    #path to goal
-    finalPath = []
+    fringe.push((startTuple, [], totalCost) , priority + heuristic(start, problem))
     
     #astar algorithm
     while not(fringe.isEmpty()):
@@ -266,22 +261,20 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         path = data[1]
             
         if problem.isGoalState(state):
-            finalPath = path
             break
         
         if state not in closedSet:             
-            successors = problem.getSuccessors(state) 
-            
-        closedSet.add(state) 
-        #loop through successors and process in alphabetical order of direction
-        for s in successors: 
-            position = s[0]
-            if position not in closedSet:
+            successors = problem.getSuccessors(state)
+            print successors
+            closedSet.add(state) 
+    
+            for s in successors: 
+                position = s[0]
                 nextAction = s[1]
                 actionList = path + [nextAction]
                 priorityAndCost = data[2] + s[2]
-                fringe.push((s, actionList, priorityAndCost), priorityAndCost + heuristic(position, problem))           
-    return finalPath
+                fringe.push((s, actionList, priorityAndCost), priorityAndCost + heuristic(position, problem))         
+    return path
 
 
 # Abbreviations
