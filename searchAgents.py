@@ -288,22 +288,21 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         self.costFn = lambda x: 1
-        self.visitedCorners = []
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
-        return self.startingPosition
+        return (self.startingPosition, (0, 0, 0, 0))
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
-        if state in self.corners and state not in self.visitedCorners:
-            self.visitedCorners.append(state)
-                        
-        isGoal = len(self.visitedCorners) == len(self.corners)
+        pos, visitedCorners = state[0], state[1]
+        sumCorners = sum(visitedCorners)
+        
+        isGoal = sumCorners == 3 and pos in self.corners and visitedCorners[self.corners.index(pos)] == 0
 
         # For display purposes only
         if isGoal:
-            self._visitedlist.append(state)
+            self._visitedlist.append(pos)
             import __main__
             if '_display' in dir(__main__):
                 if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
@@ -325,19 +324,22 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            x,y = state
+            x,y = state[0]
+            localCorners = list(state[1])
+            if (x,y) in self.corners:
+                localCorners[self.corners.index((x,y))] = 1
+    
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
-                nextState = (nextx, nexty)
-                cost = self.costFn(nextState)
-                successors.append( (nextState, action, cost))
-                    
+                cost = self.costFn((nextx, nexty))
+                successors.append( (((nextx, nexty), tuple(localCorners)), action, cost))
+                
         self._expanded += 1
-        if state not in self._visited:
-            self._visited[state] = True
-            self._visitedlist.append(state)
+        if state[0] not in self._visited:
+            self._visited[state[0]] = True
+            self._visitedlist.append(state[0])
         return successors
 
     def getCostOfActions(self, actions):
