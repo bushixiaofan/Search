@@ -184,11 +184,9 @@ def breadthFirstSearch(problem):
         
         if state not in closedSet:             
             successors = problem.getSuccessors(state)  
-        
-        closedSet.add(state) 
+            closedSet.add(state) 
     
-        for s in successors:     
-            if s[0] not in closedSet:
+            for s in successors:     
                 nextAction = s[1]
                 fringe.push((s, data[1] + [nextAction]))           
     return finalPath
@@ -265,7 +263,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         
         if state not in closedSet:             
             successors = problem.getSuccessors(state)
-            print successors
             closedSet.add(state) 
     
             for s in successors: 
