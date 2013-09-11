@@ -288,6 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         self.costFn = lambda x: 1
+        self.cornersVisited = []
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
@@ -374,11 +375,12 @@ def cornersHeuristic(state, problem):
     position, visitedCorners = state[0], list(state[1])
     
     distances = []
+     
     for elem in corners:
         if not visitedCorners[corners.index(elem)]:
-            distances.append(euclideanDistance(position, elem))
+            distances.append(util.manhattanDistance(position, elem))
     return max(distances)
-    
+       
 def euclideanDistance( xy1, xy2):
     return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
     
