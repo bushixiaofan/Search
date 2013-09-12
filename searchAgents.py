@@ -474,7 +474,12 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    minDist=100000
+    for pellet in foodGrid.asList():
+        if util.manhattanDistance(position, pellet)>minDist:
+            minDist=util.manhattanDistance(position, pellet)
+    return minDist
+        
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
