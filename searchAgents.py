@@ -473,12 +473,53 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    minDist=100000
+    distances = []
     for pellet in foodGrid.asList():
-        if util.manhattanDistance(position, pellet)>minDist:
-            minDist=util.manhattanDistance(position, pellet)
-    return minDist
+        distances.append(mazeDistance(position, pellet,problem.startingGameState))
+    
+    try:
+        heuristicVal = max(distances)
+    except ValueError:
+        heuristicVal = 0     
+    return heuristicVal
+    """
+    if x1 >= x2 and y1 >= y2:
+        while(y1 >= y2):
+            if (x1,y1) in walls:
+                maxDist += 1
+            y1 -= 1
+        while(x1 >= x2):
+            if (x1, y1) in walls:
+                maxDist += 1
+            x1 -= 1
+    elif x1 >= x2 and y1 < y2:
+        while(y1 < y2):
+            if (x1,y1) in walls:
+                maxDist += 1
+            y1 += 1
+        while(x1 >= x2):
+            if (x1, y1) in walls:
+                maxDist += 1
+            x1 -= 1
+    elif x1 < x2 and y1 >= y2:
+        while(y1 >= y2):
+            if (x1,y1) in walls:
+                maxDist += 1
+            y1 -= 1
+        while(x1 >= x2):
+            if (x1, y1) in walls:
+                maxDist += 1
+            x1 += 1
+    elif x1 < x2 and y1 < y2:
+        while(y1 >= y2):
+            if (x1,y1) in walls:
+                maxDist += 1
+            y1 += 1
+        while(x1 >= x2):
+            if (x1, y1) in walls:
+                maxDist += 1
+            x1 += 1"""
+    return heur
         
 
 class ClosestDotSearchAgent(SearchAgent):
