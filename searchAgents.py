@@ -482,46 +482,7 @@ def foodHeuristic(state, problem):
     except ValueError:
         heuristicVal = 0     
     return heuristicVal
-    """
-    if x1 >= x2 and y1 >= y2:
-        while(y1 >= y2):
-            if (x1,y1) in walls:
-                maxDist += 1
-            y1 -= 1
-        while(x1 >= x2):
-            if (x1, y1) in walls:
-                maxDist += 1
-            x1 -= 1
-    elif x1 >= x2 and y1 < y2:
-        while(y1 < y2):
-            if (x1,y1) in walls:
-                maxDist += 1
-            y1 += 1
-        while(x1 >= x2):
-            if (x1, y1) in walls:
-                maxDist += 1
-            x1 -= 1
-    elif x1 < x2 and y1 >= y2:
-        while(y1 >= y2):
-            if (x1,y1) in walls:
-                maxDist += 1
-            y1 -= 1
-        while(x1 >= x2):
-            if (x1, y1) in walls:
-                maxDist += 1
-            x1 += 1
-    elif x1 < x2 and y1 < y2:
-        while(y1 >= y2):
-            if (x1,y1) in walls:
-                maxDist += 1
-            y1 += 1
-        while(x1 >= x2):
-            if (x1, y1) in walls:
-                maxDist += 1
-            x1 += 1"""
-    return heur
-        
-
+    
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
