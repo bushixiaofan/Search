@@ -406,6 +406,7 @@ class FoodSearchProblem:
         self.startingGameState = startingGameState
         self._expanded = 0
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
+        self.cachedDist = {}
 
     def getStartState(self):
         return self.start
@@ -440,6 +441,12 @@ class FoodSearchProblem:
                 return 999999
             cost += 1
         return cost
+    
+    def addToCache(self, strCoord, dist):
+        self.cachedDist[strCoord] = dist
+        
+    def getCacheVal(self, strCoord):
+        return self.cachedDist.get(strCoord)
 
 class AStarFoodSearchAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -475,7 +482,13 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     distances = []
     for pellet in foodGrid.asList():
-        distances.append(mazeDistance(position, pellet,problem.startingGameState))
+        cachedVal = problem.getCacheVal(str(position) + str(pellet))
+        if cachedVal != None:
+            distances.append(cachedVal)
+        else:
+            dist = mazeDistance(position,pellet,problem.startingGameState)
+            distances.append(dist)
+            problem.addToCache(str(position) + str(pellet), dist)
     
     try:
         heuristicVal = max(distances)
@@ -568,10 +581,42 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
 class ApproximateSearchAgent(Agent):
     "Implement your contest entry here.  Change anything but the class name."
+    def __init__(self, fn='aStarSearch', prob='FoodSearchProblem', heuristic='extraFoodHeuristic'):
+        # Warning: some advanced Python magic is employed below to find the right functions and problems
+
+        # Get the search function from the name and heuristic
+        if fn not in dir(search):
+            raise AttributeError, fn + ' is not a search function in search.py.'
+        func = getattr(search, fn)
+        if 'heuristic' not in func.func_code.co_varnames:
+            print('[SearchAgent] using function ' + fn)
+            self.searchFunction = func
+        else:
+            if heuristic in globals().keys():
+                heur = globals()[heuristic]
+            elif heuristic in dir(search):
+                heur = getattr(search, heuristic)
+            else:
+                raise AttributeError, heuristic + ' is not a function in searchAgents.py or search.py.'
+            print('[SearchAgent] using function %s and heuristic %s' % (fn, heuristic))
+            # Note: this bit of Python trickery combines the search algorithm and the heuristic
+            self.searchFunction = lambda x: func(x, heuristic=heur)
+
+        # Get the search problem type from the name
+        if prob not in globals().keys() or not prob.endswith('Problem'):
+            raise AttributeError, prob + ' is not a search problem type in SearchAgents.py.'
+        self.searchType = globals()[prob]
+        print('[SearchAgent] using problem type ' + prob)
 
     def registerInitialState(self, state):
         "This method is called before any moves are made."
-        "*** YOUR CODE HERE ***"
+        if self.searchFunction == None: raise Exception, "No search function provided for SearchAgent"
+        starttime = time.time()
+        problem = self.searchType(state) # Makes a new search problem
+        self.actions  = self.searchFunction(problem) # Find a path
+        totalCost = problem.getCostOfActions(self.actions)
+        print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
+        if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
 
     def getAction(self, state):
         """
@@ -579,8 +624,34 @@ class ApproximateSearchAgent(Agent):
         The Agent will receive a GameState and must return an action from
         Directions.{North, South, East, West, Stop}
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if 'actionIndex' not in dir(self): self.actionIndex = 0
+        i = self.actionIndex
+        self.actionIndex += 1
+        if i < len(self.actions):
+            return self.actions[i]
+        else:
+            return Directions.STOP
+        
+def extraFoodHeuristic(state, problem):
+    """
+    heuristic for ApproximateSearchAgent
+    """
+    position, foodGrid = state
+    distances = []
+    for pellet in foodGrid.asList():
+        cachedVal = problem.getCacheVal(str(position) + str(pellet))
+        if cachedVal != None:
+            distances.append(cachedVal)
+        else:
+            dist = mazeDistance(position,pellet,problem.startingGameState)
+            distances.append(dist)
+            problem.addToCache(str(position) + str(pellet), dist)
+    
+    try:
+        heuristicVal = max(distances)
+    except ValueError:
+        heuristicVal = 0     
+    return heuristicVal
 
 def mazeDistance(point1, point2, gameState):
     """
